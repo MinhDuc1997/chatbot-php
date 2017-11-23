@@ -1,33 +1,33 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
-/* validate verify token needed for setting up web hook */ 
 if (isset($_GET['hub_verify_token'])) { 
     if ($_GET['hub_verify_token'] === '123456789') {
         echo $_GET['hub_challenge'];
-        return;
+        return true;
     } else {
         echo 'Invalid Verify Token';
-        return;
+        return false;
     }
 }
 
-/* receive and send messages */
+
 $input = json_decode(file_get_contents('php://input'), true);
 if (isset($input['entry'][0]['messaging'][0]['sender']['id'])) {
 
-    $sender = $input['entry'][0]['messaging'][0]['sender']['id']; //sender facebook id
-    $message = $input['entry'][0]['messaging'][0]['message']['text']; //text that user sent
+    $sender = $input['entry'][0]['messaging'][0]['sender']['id']; 
+    $message = $input['entry'][0]['messaging'][0]['message']['text'];
 
-    $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAACDuYq3yNsBACSPHtcOjoG2mLKKwTJFHLKfZAe4oPeB4ucbW5ZBVEZAZATDM9ZBaBsGZCF0UVMooq3CjSU5NBy9XGFXM1VQRLhu3vysGA6Vbu5w607rvGp2u8rzZAan6uXUWiXDItlZC2DyUZBfQfrkyV41NER6inzIDr2YRkgy1FAZDZD';
+    $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=<Mã_token>';
 
-    /*initialize curl*/
+    
     $ch = curl_init($url);
-    /*prepare response*/
+
     $jsonData = '{
     "recipient":{
         "id":"' . $sender . '"
         },';
+
     $message_chuan_hoa = mb_strtolower($message);
     $tempp = str_repeat(' ','', $message_chuan_hoa);
 
@@ -218,20 +218,7 @@ if (isset($input['entry'][0]['messaging'][0]['sender']['id'])) {
 	    }';
 	}
 
-	/*if(strpos($message_chuan_hoa, 'yêu anh không'){
-	    $jsonData.= '"message":{
-	            "text":"Em yêu anh <3!"
-	        }
-	    }';
-	}*/
-	/*else{
-		$jsonData.= '"message":{
-	            "text":"EM không hiểu anh nói gì!"
-	        }
-	    }';
-	}*/
 	
-    /* curl setting to send a json post data */
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
